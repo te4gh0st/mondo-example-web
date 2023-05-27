@@ -1,0 +1,160 @@
+{# Copyright © 2023 te4gh0st (Vitaliy Timtsurak). All rights reserved. #}
+{# Licensed under the Apache License, Version 2.0 #}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>MONGO DB Example</title>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5 text-center">MongoDB Example</h1>
+    <hr>
+    <div class="m-3">
+        <h2>Инструкция по пользованию:</h2>
+        <ol>
+            <li class="mt-3">Введите имя поля, по которому хотите выполнить поиск, в поле "Query Field"<br>для
+                соответствующей операции (Find,
+                Find One, Update или Delete).
+            </li>
+            <li class="mt-3">Если вы хотите выполнить поиск по конкретному значению поля, введите это значение в поле
+                "Query Value
+                (Optional)".
+            </li>
+            <li class="mt-3">Нажмите кнопку "Find", "Find One", "Update" или "Delete" для выполнения соответствующей
+                операции.
+            </li>
+            <li class="mt-3">Результаты операций "Find" и "Find One" будут отображаться в модальном окне.<br>Если
+                результаты доступны, модальное
+                окно откроется автоматически.
+            </li>
+        </ol>
+        <div class="text-center">
+            <a class="btn btn-primary w-50 text-white" href="http://localhost:8081/db/myDatabase/myCollection">Открыть БД</a>
+        </div>
+    </div>
+    <hr>
+
+    <form method="POST">
+        <input type="hidden" name="action" value="insert_one">
+        <h2>Insert One</h2>
+        <div id="insert_fields">
+            <div class="form-group">
+                <input type="text" class="form-control" name="field_name_1" placeholder="Field Name 1">
+                <input type="text" class="form-control" name="field_value_1" placeholder="Field Value 1">
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary" onclick="addField()">Add Field</button>
+        <button type="submit" class="btn btn-primary">Insert</button>
+    </form>
+    <script>
+        let fieldCount = 1;
+
+        function addField() {
+            fieldCount++;
+            const newField = document.createElement('div');
+            newField.className = 'form-group';
+            newField.innerHTML = `
+        <input type="text" class="form-control" name="field_name_${fieldCount}" placeholder="Field Name ${fieldCount}">
+        <input type="text" class="form-control" name="field_value_${fieldCount}" placeholder="Field Value ${fieldCount}">
+    `;
+            document.getElementById('insert_fields').appendChild(newField);
+        }
+
+    </script>
+    <hr>
+    <form method="POST">
+        <!-- Find, Find One, Update, and Delete sections go here -->
+
+        <h2>Find</h2>
+        <div class="form-group">
+            <input type="text" class="form-control" name="query_field" placeholder="Query Field">
+            <input type="text" class="form-control" name="query_value" placeholder="Query Value (Optional)">
+        </div>
+        <button type="submit" class="btn btn-primary" name="action" value="find">Find</button>
+        <hr>
+        <h2>Find One</h2>
+        <div class="form-group">
+            <input type="text" class="form-control" name="query_field_one" placeholder="Query Field">
+            <input type="text" class="form-control" name="query_value_one" placeholder="Query Value (Optional)">
+        </div>
+        <button type="submit" class="btn btn-primary" name="action" value="find_one">Find One</button>
+        <hr>
+        <h2>Update</h2>
+        <div class="form-group">
+            <input type="text" class="form-control" name="query_field_update" placeholder="Query Field">
+            <input type="text" class="form-control" name="query_value_update" placeholder="Query Value (Optional)">
+            <input type="text" class="form-control" name="update_key" placeholder="Update Key">
+            <input type="text" class="form-control" name="update_value" placeholder="Update Value">
+        </div>
+        <button type="submit" class="btn btn-primary" name="action" value="update">Update</button>
+        <hr>
+        <h2>Delete</h2>
+        <div class="form-group">
+            <input type="text" class="form-control" name="query_field_delete" placeholder="Query Field">
+            <input type="text" class="form-control" name="query_value_delete" placeholder="Query Value (Optional)">
+        </div>
+        <button type="submit" class="btn btn-danger" name="action" value="delete">Delete</button>
+    </form>
+</div>
+<hr>
+<div class="text-muted text-center mt-3 mb-3">Copyright © {% if year > 2023 %}2023-{{ year }}{% else %}2023{% endif %}
+    te4gh0st. All rights reserved.<br>Licensed under the Apache License, Version 2.0
+</div>
+<!-- Modal -->
+<div class="modal fade" id="resultsModal" tabindex="-1" role="dialog" aria-labelledby="resultsModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resultsModalLabel">Results</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{ results|safe }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if results %}
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+        integrity="sha384-oBqDVmMz4fnFO9gybBud7mqnr6INR7l7uJSZ+9Lgldb//J5Z8m8/uxU5BAGJWS8V"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+        $('#resultsModal').modal('show');
+    });
+</script>
+{% endif %}
+<script>
+    let fieldCount = 1;
+
+    function addField() {
+        fieldCount++;
+        const newField = document.createElement('div');
+        newField.className = 'form-group';
+        newField.innerHTML = `
+        <input type="text" class="form-control" name="field_name_${fieldCount}" placeholder="Field Name ${fieldCount}">
+        <input type="text" class="form-control" name="field_value_${fieldCount}" placeholder="Field Value ${fieldCount}">
+    `;
+        document.getElementById('insert_fields').appendChild(newField);
+    }
+
+</script>
+</body>
+</html>
