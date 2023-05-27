@@ -23,7 +23,7 @@ git clone https://github.com/te4gh0st/mondo-example-web.git
 
 ---
 <h4>
-Copyright &copy; 2022-2023 te4gh0st (Vitaliy Timtsurak). All rights reserved.
+Copyright &copy; 2023 te4gh0st (Vitaliy Timtsurak). All rights reserved.
 <br>
 Licensed under the Apache License, Version 2.0
 </h4>
